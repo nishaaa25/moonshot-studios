@@ -1,0 +1,294 @@
+@import "tailwindcss";
+
+/* ===== VIEWPORT HEIGHT VARIABLES ===== */
+:root {
+  /* Primary viewport height variable - updated by useVh() hook */
+  --vh: 1vh;
+  /* Legacy variable for backward compatibility */
+  --real-vh: 1vh;
+}
+
+@font-face {
+  font-family: 'PPTelegraf';
+  src: url('/font/PPTelegraf-Ultralight.otf') format('opentype');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap; /* Improve font loading performance */
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/font/Montserrat.ttf') format('truetype');
+  font-display: swap; /* Improve font loading performance */
+}
+
+@font-face {
+  font-family: 'PPTelegraf';
+  src: url('/font/PPTelegraf-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap; /* Improve font loading performance */
+}
+
+@font-face {
+  font-family: 'PPTelegraf';
+  src: url('/font/PPTelegraf-Ultrabold.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap; /* Improve font loading performance */
+}
+
+body{
+  font-family: 'Montserrat', sans-serif;
+}
+
+::-webkit-scrollbar{
+  display: none;
+}
+
+/* Performance optimizations */
+* {
+  box-sizing: border-box;
+}
+
+/* ===== GSAP-SAFE VIEWPORT HEIGHT CLASSES ===== */
+
+/* Full-screen page container - GSAP safe */
+.page {
+  min-height: calc(var(--vh) * 100);
+  min-height: 100dvh; /* Progressive enhancement fallback */
+  width: 100%;
+}
+
+/* Page content wrapper - optimized for GSAP animations */
+.page__content {
+  position: relative;
+  width: 100%;
+  min-height: inherit;
+  will-change: transform; /* Optimize for GSAP transforms */
+}
+
+/* Section with full viewport height */
+.section-full {
+  min-height: calc(var(--vh) * 100);
+  min-height: 100dvh; /* Progressive enhancement */
+}
+
+/* Container that adapts to mobile viewport changes */
+.viewport-container {
+  height: calc(var(--vh) * 100);
+  /* Fallback for browsers without CSS custom properties */
+  height: 100vh;
+}
+
+/* ===== PERFORMANCE OPTIMIZATION CLASSES ===== */
+
+/* Optimize transforms and animations */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-auto {
+  will-change: auto;
+}
+
+/* GPU acceleration for smooth animations */
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* GSAP-optimized element (use on animated elements) */
+.gsap-element {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.montserrat{
+  font-family: 'Montserrat', sans-serif;
+}
+
+.launchlab-text {
+  color: #000;
+}
+
+.launchlab-text * {
+  color: #000;
+}
+
+body{
+  color: #fff;
+  background: transparent;
+}
+
+.telegraf{
+  font-family: 'PPTelegraf', sans-serif;
+}
+
+/* Hiding class, making content visible only to screen readers but not visually */
+/* "sr" meaning "screen-reader" */
+/* https://css-tricks.com/inclusively-hidden/ */
+.sr-only:not(:focus):not(:active) {
+clip: rect(0 0 0 0); 
+clip-path: inset(50%);
+height: 1px;
+overflow: hidden;
+position: absolute;
+white-space: nowrap; 
+width: 1px;
+}
+
+.animate-me {
+color: #fff;
+box-sizing: border-box;
+width: 100%;
+text-align: center;
+perspective: 500px;
+}
+
+.noise-overlay {
+position: fixed;
+left: 0;
+top: 0;
+width: 100vw;
+height: calc(var(--vh, 1vh) * 100);
+height: calc(var(--real-vh, 1vh) * 100); /* Legacy fallback */
+pointer-events: none;
+}
+
+.cardContainer{
+height: calc(var(--vh, 1vh) * 100);
+height: calc(var(--real-vh, 1vh) * 100); /* Legacy fallback */
+display: flex;
+align-items: center;
+justify-content: center;
+position: sticky;
+top: 0px;
+.card{
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  top: -25%;
+  height: 500px;
+  width: 1000px;
+  border-radius: 25px;
+  padding:50px;
+  transform-origin: top;
+  h2{
+    text-align: center;
+    margin: 0px;
+    font-size: 28px;
+  }
+  .body{
+    display: flex;
+    height: 100%;
+    margin-top: 50px;
+    gap: 50px;
+
+    .description{
+      width: 40%;
+      position: relative;
+      top: 10%;
+      p{
+        font-size: 16px;
+        &::first-letter{
+          font-size: 28px;
+          font-family: 'Title';
+        }
+      }
+      span{
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        a{
+          font-size: 12px;
+          text-decoration: underline;
+          cursor: pointer;
+        }
+      }
+    }
+
+    .imageContainer{
+      position: relative;
+      width: 60%;
+      height: 100%;
+      border-radius: 25px;
+      overflow: hidden;
+      .inner{
+        width: 100%;
+        height: 100%;
+      }
+      img{
+        object-fit: cover;
+      }
+    }
+  }
+}
+}
+
+
+/* #root {
+  width: 100vw;
+  height: calc(var(--real-vh, 1vh) * 100);
+} */
+
+
+.animate-fade-in-up {
+  animation: fadeInUp 1s ease-out forwards;
+}
+
+.animate-fade-in-down {
+  animation: fadeInDown 1s ease-out forwards;
+}
+
+.animation-delay-200 {
+  animation-delay: 200ms;
+}
+
+.animation-delay-500 {
+  animation-delay: 500ms;
+}
+
+.animation-delay-1000 {
+  animation-delay: 1000ms;
+}
+
+.animation-delay-1500 {
+  animation-delay: 1500ms;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(200px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-200px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
