@@ -21,7 +21,6 @@ export default function Contact({ navigationOverlayRef }) {
   const [submitStatus, setSubmitStatus] = useState("");
 
   useEffect(() => {
-    // Initialize EmailJS with your public key
     emailjs.init("T4qWu19B5Yg6alfHl"); // Replace with your actual public key
   }, []);
 
@@ -69,18 +68,14 @@ export default function Contact({ navigationOverlayRef }) {
       trigger: contactRef.current,
       start: bgStartPoint,
       end: bgEndPoint,
-      onEnter: () => {
-        gsap.to(document.body, { duration: 1, backgroundColor: "#fff" });
-      },
-      onLeave: () => {
-        gsap.to(document.body, { duration: 1, backgroundColor: "black" });
-      },
-      onEnterBack: () => {
-        gsap.to(document.body, { duration: 1, backgroundColor: "#fff" });
-      },
-      onLeaveBack: () => {
-        gsap.to(document.body, { duration: 1, backgroundColor: "black" });
-      },
+      onEnter: () =>
+        gsap.to(document.body, { duration: 1, backgroundColor: "#fff" }),
+      onLeave: () =>
+        gsap.to(document.body, { duration: 1, backgroundColor: "black" }),
+      onEnterBack: () =>
+        gsap.to(document.body, { duration: 1, backgroundColor: "#fff" }),
+      onLeaveBack: () =>
+        gsap.to(document.body, { duration: 1, backgroundColor: "black" }),
     });
 
     return () => {
@@ -102,27 +97,30 @@ export default function Contact({ navigationOverlayRef }) {
 
     gsap.set(elements, { opacity: 0, y: 50, willChange: "transform, opacity" });
 
-    gsap.timeline({
-      scrollTrigger: {
-        trigger: contactRef.current,
-        start: "top 90%",
-        end: "bottom 80%",
-      },
-    }).to(elements, {
-      opacity: 1,
-      y: 0,
-      duration: 1.2,
-      ease: "power2.out",
-      stagger: 0.15,
-    });
+    gsap
+      .timeline({
+        scrollTrigger: {
+          trigger: contactRef.current,
+          start: "top 90%",
+          end: "bottom 80%",
+        },
+      })
+      .to(elements, {
+        opacity: 1,
+        y: 0,
+        duration: 1.2,
+        ease: "power2.out",
+        stagger: 0.15,
+      });
   }, []);
 
   return (
     <div ref={contactRef} className="min-h-[100vh] flex relative flex-col">
+      {/* Main Content */}
       <div className="flex-1 flex px-4 sm:px-6 lg:px-10 pt-12 sm:pt-16 lg:pt-24 pb-8">
         <div className="flex flex-col lg:flex-row lg:justify-between gap-8 lg:gap-12 w-full h-full">
           {/* Left Column */}
-          <div className="flex-1 flex flex-col justify-between">
+          <div className="flex-1 flex flex-col justify-between relative">
             <div className="flex-1">
               <div className="flex sm:flex-row sm:items-center gap-2 sm:gap-2 mb-6 sm:mb-8">
                 <h1 className="text-[6vw] sm:text-4xl lg:text-5xl lg:pt-3 pt-1 font-bold text-black telegraf leading-none">
@@ -157,13 +155,33 @@ export default function Contact({ navigationOverlayRef }) {
                       ref={partnersParaStaggerRef}
                       className="will-change-transform text-xs block"
                     >
-                      Whether you're a founder or brand with a breakthrough product
-                      or an investor seeking the next generation of brand building,
-                      we're interested in ambitious partnerships.
+                      Whether you're a founder or brand with a breakthrough
+                      product or an investor seeking the next generation of
+                      brand building, we're interested in ambitious
+                      partnerships.
                     </span>
                   </p>
                 </div>
               </div>
+            </div>
+
+            {/* Left Footer Image */}
+            <div className="hidden lg:flex lg:flex-col absolute bottom-48 left-10">
+              <div>
+                <img
+                  src="/google.svg"
+                  alt="footer"
+                  className="w-[3vw] h-[3vw] object-contain"
+                />
+                <p className="text-black/40 w-[40%]">
+                  Great brands start with great conversations. Let's start ours.
+                </p>
+              </div>
+              <img
+                src="footer.svg"
+                alt="footer"
+                className="w-[30vw] h-[10vw] object-contain"
+              />
             </div>
           </div>
 
@@ -233,7 +251,6 @@ export default function Contact({ navigationOverlayRef }) {
                 />
               </div>
 
-              {/* Status Message */}
               {submitStatus && (
                 <div
                   className={`text-sm p-2 rounded ${
@@ -260,6 +277,101 @@ export default function Contact({ navigationOverlayRef }) {
                 {isSubmitting ? "SENDING..." : "SEND"}
               </button>
             </form>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="pt-6 sm:pt-8">
+        <div className="flex sm:px-6 lg:px-10 px-4 flex-col sm:flex-row sm:justify-between gap-6 sm:gap-12">
+          {/* Logo and Tagline */}
+          <div className="sm:flex-1">
+            <div ref={footerTextStaggerRef} className="space-y-2 text-gray-500">
+              <span className="will-change-transform block">
+                <p className="text-lg sm:text-xl lg:leading-none">
+                  Built For Permanence.
+                </p>
+                <p className="text-lg sm:text-xl lg:leading-none">
+                  Designed To Resonate. Ready To Scale.
+                </p>
+              </span>
+            </div>
+          </div>
+
+          {/* Links Section */}
+          <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 lg:gap-12">
+            <div>
+              <h3 className="font-bold text-lg mb-1 telegraf lg:mb-3 text-black lg:text-sm">
+                COMPANY
+              </h3>
+              <div className="flex gap-2">
+                <a href="#" className="block text-gray-400 text-xs sm:text-sm">
+                  HOW IT WORKS
+                </a>
+                <a href="#" className="block text-gray-400 text-xs sm:text-sm">
+                  OUR BELIEFS
+                </a>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="font-bold text-lg mb-1 telegraf lg:mb-3 text-black lg:text-sm">
+                GET IN TOUCH
+              </h3>
+              <a
+                href="mailto:info@moonshotstudio.ai"
+                className="text-gray-400 text-xs sm:text-sm block mb-4"
+              >
+                INFO@MOONSHOTSTUDIO.AI
+              </a>
+            </div>
+
+            <div>
+              <h3 className="font-bold text-lg mb-1 telegraf lg:mb-3 text-black lg:text-sm">
+                OUR SOCIALS
+              </h3>
+              <div className="flex text-black pb-4 lg:pb-0 space-x-3 sm:space-x-4">
+                <img
+                  src="/ig.svg"
+                  alt="instagram"
+                  className="w-6 h-6 sm:w-5 sm:h-5 text-gray-400 cursor-pointer"
+                />
+                <span>|</span>
+                <img
+                  src="/in.svg"
+                  alt="linkedin"
+                  className="w-6 h-6 sm:w-5 sm:h-5 text-gray-400 cursor-pointer"
+                />
+                <span>|</span>
+                <img
+                  src="/x.svg"
+                  alt="twitter"
+                  className="w-6 h-6 sm:w-5 sm:h-5 text-gray-400 cursor-pointer"
+                />
+                <span>|</span>
+                <img
+                  src="/fb.svg"
+                  alt="facebook"
+                  className="w-6 h-6 sm:w-5 sm:h-5 text-gray-400 cursor-pointer"
+                />
+                <span>|</span>
+                <img
+                  src="/yt.svg"
+                  alt="youtube"
+                  className="w-6 h-6 sm:w-5 sm:h-5 text-gray-400 cursor-pointer"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Footer */}
+        <div className="lg:py-4 py-6 lg:px-10 px-4 bg-[#F3F3F3] flex sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0 text-xs flex-col-reverse lg:flex-row text-gray-400 text-center lg:text-left">
+          <p>Copyright © 2024. All rights reserved. Moonshot Studios</p>
+          <div className="flex space-x-4 lg:justify-start justify-center">
+            <a href="#">Terms & conditions</a>
+            <span>|</span>
+            <a href="#">Privacy policy</a>
           </div>
         </div>
       </div>
