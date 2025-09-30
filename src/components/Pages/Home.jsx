@@ -30,7 +30,7 @@ const Home = ({ navigationOverlayRef }) => {
       scrollTrigger: {
         trigger: document.body,
         start: "top -1200%",
-        end: "+=1100%",
+        end: "+=1500%",
         scrub: true,
         invalidateOnRefresh: false,
         anticipatePin: true,

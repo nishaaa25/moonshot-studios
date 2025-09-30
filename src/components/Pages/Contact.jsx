@@ -146,7 +146,7 @@ export default function Contact({ navigationOverlayRef }) {
   }, []);
 
   return (
-    <div ref={contactRef} className="min-h-[100vh] flex relative flex-col">
+    <div ref={contactRef} className="min-h-[100vh] flex relative flex-col bg-white">
       {/* Main Content - Takes up remaining space */}
       <div className="flex-1 flex px-4 sm:px-6 lg:px-10 pt-12 sm:pt-16 lg:pt-24 pb-8">
         <div className="flex flex-col lg:flex-row lg:justify-between gap-8 lg:gap-12 w-full h-full">
