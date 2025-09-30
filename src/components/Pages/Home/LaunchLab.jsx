@@ -39,12 +39,12 @@ const LaunchLab = () => {
     {
       title: "BASE",
       description:
-        "Network effects where each successful brand amplifies the entire ecosystem",
+        "Shared global infrastructure enabling rapid scale across channels and geographies",
     },
     {
       title: "CONNECT",
       description:
-        "Full-funnel orchestration to convert attention into lasting affinity",
+        "Network effects where each successful brand amplifies the entire ecosystem",
     }
   ];
 

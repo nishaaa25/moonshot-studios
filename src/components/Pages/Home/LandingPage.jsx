@@ -7,7 +7,7 @@ import ScrambleText from "../../UiComponents/ScrambleText";
 
 gsap.registerPlugin(SplitText, ScrollTrigger);
 
-const LandingPage = () => {
+const LandingPage = ({ navigationOverlayRef }) => {
   const textRef = useRef(null);
   const textRef1 = useRef(null);
   const textRef2 = useRef(null);
@@ -15,6 +15,23 @@ const LandingPage = () => {
   const textRef4 = useRef(null);
   const imageRef = useRef(null);
   const landingPageRef = useRef(null);
+
+  const sectionMap = {
+    'who we are for': 'stackcards',
+    'our beliefs': 'beliefs', 
+    'impact': 'provenimpact',
+    'how we work': 'launchlab',
+    'team': 'team',
+    'contact us': 'contact'
+  }
+
+  const handleNavigation = (e, sectionKey) => {
+    e.preventDefault()
+    const sectionId = sectionMap[sectionKey]
+    if (navigationOverlayRef?.current && sectionId) {
+      navigationOverlayRef.current.animateToSection(sectionId)
+    }
+  }
 
   useGSAP(() => {
     const textElements = [imageRef.current, textRef.current, textRef1.current, textRef2.current, textRef3.current, textRef4.current];
@@ -63,6 +80,7 @@ const LandingPage = () => {
         </div>
         <h1
           ref={textRef4}
+          onClick={(e) => handleNavigation(e, 'how we work')}
           className="text-center font-light uppercase flex items-center gap-2 pt-4 lg text-xs sm:text-base"
         >
           See how it works

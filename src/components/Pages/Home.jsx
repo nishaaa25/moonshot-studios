@@ -21,6 +21,10 @@ const Home = ({ navigationOverlayRef }) => {
         <SphereScene />
       </LazyScene>
 
+      {/* <div className="h-screen w-full bg-black fixed top-0 left-0 z-[10]">
+
+      </div> */}
+
       <Crosshair />
 
       <GlobalIcons />
@@ -37,7 +41,7 @@ const Home = ({ navigationOverlayRef }) => {
       <Navbar navigationOverlayRef={navigationOverlayRef} />
       
       <section id="landing">
-        <LandingPage />
+        <LandingPage navigationOverlayRef={navigationOverlayRef} />
       </section>
       
       <section id="details">

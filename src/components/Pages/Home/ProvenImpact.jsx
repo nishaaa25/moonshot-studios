@@ -8,6 +8,17 @@ import { SplitText } from "gsap/SplitText";
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
+const headings = [
+  "microneedle skincare brand in Thailand",
+  "#1 Dual LED light + Red Light Therapy Teeth Whitening Kit in Thailand"
+];
+
+// Paragraphs for each card (sync index with headings)
+const cardParagraphs = [
+  "MoonshotLabs is a brand where science and technology meet effective ingredients to deliver targeted, maximum results. We are proud to be the #1 microneedle skincare brand in Thailand and a recipient of the ELLE Best of Beauty 2024 award.",
+  "Our brand, Linee, sets the new standard in teeth whitening and oral care. It features the #1 Dual LED light + Red Light Therapy Teeth Whitening Kit in Thailand and has also been honored with the ELLE Best of Beauty 2024 award."
+];
+
 const ProvenImpact = () => {
   const sectionRef = useRef(null);
   const contentRef = useRef(null);
@@ -25,14 +36,8 @@ const ProvenImpact = () => {
   const revealPara1Ref = useRef(null);
   const revealPara2Ref = useRef(null);
 
-  // State for dynamic heading
+  // State for dynamic heading and paragraph
   const [currentHeading, setCurrentHeading] = useState(0);
-
-  // Array of headings for each card (4 headings now)
-  const headings = [
-    "microneedle skincare brand in Thailand",
-    "#1 Dual LED light + Red Light Therapy Teeth Whitening Kit in Thailand"
-  ];
 
   // Handle card change from ProvenCards component
   const handleCardChange = (cardIndex) => {
@@ -187,7 +192,7 @@ const ProvenImpact = () => {
               From First Launch to Market Leadership
             </h1>
             <p ref={firstParaRefMove} className="lg:text-xs md:text-xs sm:text-xs text-[3vw] font-light lg:w-[60%] md:w-[70%] w-[82%]">
-            MoonshotLabs is a brand where science and technology meet effective ingredients to deliver targeted, maximum results. We are proud to be the #1 microneedle skincare brand in Thailand and a recipient of the ELLE Best of Beauty 2024 award.
+              {cardParagraphs[currentHeading]}
             </p>
           </div>
 

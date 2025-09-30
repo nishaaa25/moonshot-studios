@@ -13,14 +13,10 @@ const Thinking = () => {
   const bottomLineRef = useRef(null);
   const mainHeadingRef = useRef(null);
   const subHeadingRef = useRef(null);
-  const firstParaRef = useRef(null);
-  const secondParaRef = useRef(null);
-  const mathTitleRef = useRef(null);
+  // Removed firstParaRef, secondParaRef, mathTitleRef, firstParaStaggerRef, secondParaStaggerRef
   const mainHeadingStaggerRef = useRef(null);
   const subHeadingStaggerRef = useRef(null);
-  const firstParaStaggerRef = useRef(null);
-  const secondParaStaggerRef = useRef(null);
-  
+
   // Individual refs for each stagger span
   const staggerSpan1Ref = useRef(null);
   const staggerSpan2Ref = useRef(null);
@@ -45,15 +41,14 @@ const Thinking = () => {
       },
     });
 
-    // Set initial hidden state for main elements
-    gsap.set([mainHeadingRef.current, subHeadingRef.current, mathTitleRef.current, firstParaRef.current], {
+    // Set initial hidden state for main elements (removed firstParaRef, mathTitleRef)
+    gsap.set([mainHeadingRef.current, subHeadingRef.current], {
       opacity: 0,
       y: 50,
     });
 
-    // Set initial hidden state for all stagger spans
+    // Set initial hidden state for all stagger spans (removed firstParaStaggerRef)
     gsap.set([
-      firstParaStaggerRef.current,
       staggerSpan1Ref.current,
       staggerSpan2Ref.current,
       staggerSpan3Ref.current,
@@ -78,16 +73,15 @@ const Thinking = () => {
       }
     });
 
-    tl.to([mainHeadingRef.current, subHeadingRef.current, firstParaRef.current], {
+    tl.to([mainHeadingRef.current, subHeadingRef.current], {
       opacity: 1,
       y: 0,
       duration: 1,
       ease: "power2.out"
     }, 0);
 
-    // Animate stagger spans in with stagger effect
+    // Animate stagger spans in with stagger effect (removed firstParaStaggerRef)
     tl.to([
-      firstParaStaggerRef.current,
       staggerSpan1Ref.current,
       staggerSpan2Ref.current,
       staggerSpan3Ref.current,
@@ -102,20 +96,10 @@ const Thinking = () => {
       ease: "power2.out"
     }, 0.5);
 
-    tl.to(mathTitleRef.current, {
-      opacity: 1,
-      y: 0,
-      duration: 1,
-      ease: "power2.out"
-    }, 2.0);
-
-    tl.to(mathTitleRef.current, { duration: 2 }, 2.5);
-
-    // Set initial properties for all stagger elements
+    // Set initial properties for all stagger elements (removed firstParaStaggerRef)
     gsap.set([
-      mainHeadingRef.current, 
-      subHeadingStaggerRef.current, 
-      firstParaStaggerRef.current, 
+      mainHeadingRef.current,
+      subHeadingStaggerRef.current,
       staggerSpan1Ref.current,
       staggerSpan2Ref.current,
       staggerSpan3Ref.current,
@@ -127,11 +111,10 @@ const Thinking = () => {
       willChange: "transform, opacity"
     });
 
-    // Animate all elements with proper stagger
+    // Animate all elements with proper stagger (removed firstParaStaggerRef)
     tl.to([
-      mainHeadingRef.current, 
-      subHeadingStaggerRef.current, 
-      firstParaStaggerRef.current,
+      mainHeadingRef.current,
+      subHeadingStaggerRef.current,
       staggerSpan1Ref.current,
       staggerSpan2Ref.current,
       staggerSpan3Ref.current,
@@ -177,37 +160,32 @@ const Thinking = () => {
               </div>
             </div>
             <h3 ref={subHeadingRef} className="lg:text-sm md:text-xs sm:text-xs text-xs uppercase font-bold telegraf">
-              <span ref={subHeadingStaggerRef} className="will-change-transform block lg:w-full w-[80%]">
-                Why Most Brand "Aggregators" Miss the Point
+              <span ref={subHeadingStaggerRef} className="will-change-transform block lg:w-[80%] w-[80%]">
+                Most brand aggregators pursued growth through financial engineering and inflated marketing budgets. Their perceived advantage is scale, not substance.
+
               </span>
             </h3>
-            <p ref={firstParaRef} className="lg:text-sm md:text-xs sm:text-xs text-xs font-light lg:w-[65%] md:w-[80%] sm:w-[90%] w-full">
-              <span ref={firstParaStaggerRef} className="will-change-transform block lg:text-base text-[3vw]">
-                Traditional approaches prioritize spreadsheets over storytelling.
-                They optimize for multiple arbitrage instead of building genuine
-                brand equity.
-              </span>
-            </p>
+            {/* Removed the firstParaRef/firstParaStaggerRef para here */}
           </div>
           <div>
-            <p ref={firstParaRef} className="lg:text-sm md:text-xs sm:text-xs text-xs font-light lg:w-[90%] md:w-[80%] sm:w-[90%] w-full">
+            <p className="lg:text-sm md:text-xs sm:text-xs text-xs font-light lg:w-[90%] md:w-[80%] sm:w-[90%] w-full">
               <span ref={staggerSpan1Ref} className="will-change-transform block lg:text-base text-[3vw] relative pl-4 before:content-['•'] before:absolute before:left-0 before:text-white">
-              We don't collect brands — we compound outcomes. Our focus is on synergy and systems, not vanity metrics.
+                We don't collect brands — we compound outcomes. Our focus is on synergy and systems, not vanity metrics.
               </span>
               <span ref={staggerSpan2Ref} className="will-change-transform block lg:text-base text-[3vw] relative pl-4 before:content-['•'] before:absolute before:left-0 before:text-white">
-              We don't bet on arbitrage — we bet on brand equity. Real value lies in brand strength, not financial gamesmanship.
+                We don't bet on arbitrage — we bet on brand equity. Real value lies in brand strength, not financial gamesmanship.
               </span>
               <span ref={staggerSpan3Ref} className="will-change-transform block lg:text-base text-[3vw] relative pl-4 before:content-['•'] before:absolute before:left-0 before:text-white">
-              We don't chase multiples — we build for meaning and margin.
+                We don't chase multiples — we build for meaning and margin.
               </span>
               <span ref={staggerSpan4Ref} className="will-change-transform block lg:text-base text-[3vw] relative pl-4 before:content-['•'] before:absolute before:left-0 before:text-white">
-              Deep connection with consumers drives durable profitability.
+                Deep connection with consumers drives durable profitability.
               </span>
               <span ref={staggerSpan5Ref} className="will-change-transform block lg:text-base text-[3vw] relative pl-4 before:content-['•'] before:absolute before:left-0 before:text-white">
-              We don't flip—we build for permanence. Our brands are designed to endure, not exit prematurely.
+                We don't flip—we build for permanence. Our brands are designed to endure, not exit prematurely.
               </span>
               <span ref={staggerSpan6Ref} className="will-change-transform block lg:text-base text-[3vw] relative pl-4 before:content-['•'] before:absolute before:left-0 before:text-white">
-              We don't build purely around Conversion - our brands are built around trust, emotion, and relevance
+                We don't build purely around Conversion - our brands are built around trust, emotion, and relevance
               </span>
             </p>
           </div>

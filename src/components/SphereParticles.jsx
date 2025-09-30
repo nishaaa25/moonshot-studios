@@ -231,6 +231,8 @@ export const SphereParticles = ({
   const scrollDirectionRef = useRef(0); // 1 for down, -1 for up, 0 for none
   const blastInProgressRef = useRef(false); // Track if blast is currently happening
   const maxProgressReachedRef = useRef(0); // Track highest scroll progress reached
+  const rebuildTriggeredRef = useRef(false); // Prevent multiple rebuild triggers
+  const lastRebuildTimeRef = useRef(0); // Track last rebuild time for debouncing
 
   // Responsive scaling state
   const [responsiveScale, setResponsiveScale] = useState(() => getResponsiveScale());
@@ -262,12 +264,14 @@ export const SphereParticles = ({
       scrollDirectionRef.current = 0;
       blastInProgressRef.current = false;
       maxProgressReachedRef.current = 0;
+      rebuildTriggeredRef.current = false;
+      lastRebuildTimeRef.current = 0;
   
       const masterTimeline = gsap.timeline({
         scrollTrigger: {
           trigger: document.body,
           start: "top top",
-          end: "+=1490%",
+          end: "+=1390%",
           scrub: 0.1,
           invalidateOnRefresh: true,
           onRefresh: () => {
@@ -280,10 +284,12 @@ export const SphereParticles = ({
             scrollDirectionRef.current = 0;
             blastInProgressRef.current = false;
             maxProgressReachedRef.current = 0;
+            rebuildTriggeredRef.current = false;
+      lastRebuildTimeRef.current = 0;
             console.log('Sphere ScrollTrigger refreshed - states reset');
           },
           onUpdate: (self) => {
-            // FIXED: Improved scroll direction and progress tracking
+            // FIXED: Improved scroll direction and progress tracking with mobile stability
             const currentProgress = self.progress;
             const progressDelta = currentProgress - lastScrollProgressRef.current;
             
@@ -292,17 +298,18 @@ export const SphereParticles = ({
               maxProgressReachedRef.current = currentProgress;
             }
             
-            // Only update scroll direction if there's meaningful movement
-            if (Math.abs(progressDelta) > 0.001) {
+            // More stable scroll direction detection for mobile - reduce threshold but keep stability
+            const minMovementThreshold = deviceInfo.isMobile ? 0.0015 : 0.001; // Less aggressive than 0.003
+            if (Math.abs(progressDelta) > minMovementThreshold) {
               scrollDirectionRef.current = progressDelta > 0 ? 1 : -1;
             }
             
             lastScrollProgressRef.current = currentProgress;
             
-            // FIXED: Clear and definitive blast zones
+            // FIXED: Restore original blast zones for quality, but keep mobile logic improvements
             const blastStartPoint = deviceInfo.isMobile ? 0.85 : 0.88;
             const blastActiveZone = deviceInfo.isMobile ? 0.92 : 0.95; // Zone where blast is fully active
-            const blastCompletePoint = deviceInfo.isMobile ? 0.98 : 0.99;
+            const blastCompletePoint = deviceInfo.isMobile ? 0.98 : 0.99; // Keep original completion point
             
             // BLAST PHASE LOGIC
             if (currentProgress >= blastStartPoint) {
@@ -329,17 +336,25 @@ export const SphereParticles = ({
               // POST-BLAST LOGIC - only when scrolling back after a completed blast
               const isScrollingUp = scrollDirectionRef.current < 0;
               const hasCompletedFullBlast = blastCompletedRef.current && maxProgressReachedRef.current >= blastCompletePoint;
-              const isWellBelowBlastZone = currentProgress < (blastStartPoint - 0.05);
+              const isWellBelowBlastZone = currentProgress < (blastStartPoint - (deviceInfo.isMobile ? 0.06 : 0.05)); // Reduce mobile buffer slightly
               
-              if (hasCompletedFullBlast && isScrollingUp && isWellBelowBlastZone) {
+              // Add time-based debouncing for extra mobile stability
+              const currentTime = performance.now();
+              const timeSinceLastRebuild = currentTime - lastRebuildTimeRef.current;
+              const minRebuildInterval = deviceInfo.isMobile ? 1000 : 500; // 1s on mobile, 0.5s on desktop
+              
+              if (hasCompletedFullBlast && isScrollingUp && isWellBelowBlastZone && 
+                  !rebuildTriggeredRef.current && timeSinceLastRebuild > minRebuildInterval) {
                 // Only set blast progress to 0 when well below blast zone
                 blastProgressRef.current = 0;
                 blastInProgressRef.current = false;
                 
-                // Trigger rebuild if not already rebuilding
+                // Trigger rebuild ONLY ONCE per blast cycle with time debouncing
                 if (!isRebuildPhaseRef.current) {
+                  rebuildTriggeredRef.current = true; // Prevent multiple triggers
+                  lastRebuildTimeRef.current = currentTime; // Record rebuild time
                   isRebuildPhaseRef.current = true;
-                  console.log('Triggering rebuild - Conditions met');
+                  console.log('Triggering rebuild - Conditions met (quality-preserved, mobile-safe)');
                   
                   if (buildProgressRef.current < 1) {
                     gsap.killTweensOf(buildProgressRef);
@@ -350,6 +365,7 @@ export const SphereParticles = ({
                       onUpdate: () => invalidate(),
                       onComplete: () => {
                         console.log('Rebuild completed');
+                        // Don't reset rebuildTriggeredRef here - let full reset handle it
                       }
                     });
                   }
@@ -370,6 +386,8 @@ export const SphereParticles = ({
               blastProgressRef.current = 0;
               blastInProgressRef.current = false;
               maxProgressReachedRef.current = 0;
+              rebuildTriggeredRef.current = false;
+      lastRebuildTimeRef.current = 0; // Reset rebuild trigger
               buildProgressRef.current = 0; // Reset build progress too
               
               // Restart build animation
@@ -637,8 +655,8 @@ export const SphereParticles = ({
     const computeUpdate = Fn(() => {
       const inverseProgress = smoothstep(1.0, 0.0, uniforms.blastProgress);
 
-      // FIXED: More stable blast vs rebuild logic - only stop sphere formation when actually blasting
-      If(uniforms.blastProgress.lessThan(0.1), () => {
+      // FIXED: More stable blast vs rebuild logic - only stop sphere formation when actually blasting  
+      If(uniforms.blastProgress.lessThan(0.05), () => { // Restore more sensitive threshold for quality
         const distanceToTarget = targetPos.sub(spawnPosition);
         const distanceLen = distanceToTarget.length();
         const buildSpeed = smoothstep(0.0, 1.0, uniforms.buildProgress);
@@ -691,8 +709,8 @@ export const SphereParticles = ({
         );
       });
 
-      // FIXED: Only apply blast physics when truly blasting (higher threshold)
-      If(uniforms.blastProgress.greaterThan(0.3), () => {
+      // FIXED: Restore original blast physics threshold for better visual quality
+      If(uniforms.blastProgress.greaterThan(0.1), () => { // Restore original 0.1 threshold
         const bp2 = uniforms.blastProgress.mul(uniforms.blastProgress);
         const blastForce = blastVelocity.mul(bp2).mul(deltaTime).mul(8.0);
         spawnPosition.addAssign(blastForce);

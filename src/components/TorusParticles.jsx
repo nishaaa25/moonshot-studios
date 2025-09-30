@@ -177,12 +177,12 @@ export const TorusParticles = ({
       // Create a single timeline with ScrollTrigger for all position animations
       const masterTimeline = gsap.timeline({
         scrollTrigger: {
-          trigger: document.documentElement,
-          start: isMobile ? "top -1100%" : "top -1040%", // Converted from "top -8000px" 
+          trigger: document.body,
+          start: "top -940%", // Converted from "top -8000px" 
           end: "+=1380%", // Converted from "+=6800px"
-          scrub: 0.6,
-          invalidateOnRefresh: true,
-          onUpdate: () => invalidate(),
+          scrub: 1,
+          invalidateOnRefresh: false,
+          anticipatePin: true,
         },
       });
   

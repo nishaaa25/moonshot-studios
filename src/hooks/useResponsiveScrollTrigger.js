@@ -9,6 +9,7 @@ import { optimizedAnimations } from '../utils/optimizedAnimations';
 export const useResponsiveScrollTrigger = () => {
   useEffect(() => {
     let resizeTimeout;
+    let orientationTimeout;
     
     const handleResize = () => {
       // Debounce resize events to avoid excessive refreshes
@@ -16,23 +17,27 @@ export const useResponsiveScrollTrigger = () => {
       resizeTimeout = setTimeout(() => {
         // Refresh ScrollTrigger after resize
         ScrollTrigger.refresh();
-      }, 150);
+      }, 250); // Increased debounce for mobile stability
     };
 
     // Add resize listener
     window.addEventListener('resize', handleResize);
     
-    // Also listen for orientation change on mobile
-    window.addEventListener('orientationchange', () => {
-      setTimeout(() => {
+    // Also listen for orientation change on mobile with better debouncing
+    const handleOrientationChange = () => {
+      clearTimeout(orientationTimeout);
+      orientationTimeout = setTimeout(() => {
         ScrollTrigger.refresh();
-      }, 500); // Wait for orientation change to complete
-    });
+      }, 800); // Longer delay for orientation changes to complete
+    };
+    
+    window.addEventListener('orientationchange', handleOrientationChange);
 
     return () => {
       window.removeEventListener('resize', handleResize);
-      window.removeEventListener('orientationchange', handleResize);
+      window.removeEventListener('orientationchange', handleOrientationChange);
       clearTimeout(resizeTimeout);
+      clearTimeout(orientationTimeout);
     };
   }, []);
 
