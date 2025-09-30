@@ -40,10 +40,17 @@ import {
   SpriteNodeMaterial,
 } from "three/webgpu";
 
-// Mobile detection utility
+// Enhanced mobile detection utility with iPhone-specific handling
 const isMobile = () => {
   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
          window.innerWidth <= 768;
+};
+
+// iPhone-specific detection for handling iOS Safari quirks
+const isIPhone = () => {
+  return /iPhone/i.test(navigator.userAgent) || 
+         (/iPad/i.test(navigator.userAgent) && window.innerWidth < 1024) || // iPad in iPhone mode
+         (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1 && window.innerWidth < 1024); // iOS 13+ detection
 };
 
 // Fixed responsive scaling - maintain visual quality across devices
@@ -189,14 +196,16 @@ export const SphereParticles = ({
   // Store device type and positions to avoid recalculation
   const [deviceInfo] = useState(() => {
     const mobile = isMobile();
+    const iPhone = isIPhone();
     const positions = getDevicePositions();
     const speedConfig = getSpeedConfig();
     
-    console.log(`Device detected: ${mobile ? 'Mobile' : 'Desktop'}`);
+    console.log(`Device detected: ${mobile ? 'Mobile' : 'Desktop'}${iPhone ? ' (iPhone)' : ''}`);
     console.log(`Initial position: x=${positions.initial.x}, y=${positions.initial.y}, z=${positions.initial.z}`);
     
     return {
       isMobile: mobile,
+      isIPhone: iPhone,
       positions,
       speedConfig
     };
@@ -233,6 +242,7 @@ export const SphereParticles = ({
   const maxProgressReachedRef = useRef(0); // Track highest scroll progress reached
   const rebuildTriggeredRef = useRef(false); // Prevent multiple rebuild triggers
   const lastRebuildTimeRef = useRef(0); // Track last rebuild time for debouncing
+  const scrollVelocityRef = useRef(0); // Track scroll velocity for iPhone momentum detection
 
   // Responsive scaling state
   const [responsiveScale, setResponsiveScale] = useState(() => getResponsiveScale());
@@ -266,6 +276,7 @@ export const SphereParticles = ({
       maxProgressReachedRef.current = 0;
       rebuildTriggeredRef.current = false;
       lastRebuildTimeRef.current = 0;
+      scrollVelocityRef.current = 0;
   
       const masterTimeline = gsap.timeline({
         scrollTrigger: {
@@ -286,6 +297,7 @@ export const SphereParticles = ({
             maxProgressReachedRef.current = 0;
             rebuildTriggeredRef.current = false;
       lastRebuildTimeRef.current = 0;
+      scrollVelocityRef.current = 0;
             console.log('Sphere ScrollTrigger refreshed - states reset');
           },
           onUpdate: (self) => {
@@ -298,8 +310,12 @@ export const SphereParticles = ({
               maxProgressReachedRef.current = currentProgress;
             }
             
-            // More stable scroll direction detection for mobile - reduce threshold but keep stability
-            const minMovementThreshold = deviceInfo.isMobile ? 0.0015 : 0.001; // Less aggressive than 0.003
+            // iPhone-specific scroll direction detection with velocity tracking
+            const minMovementThreshold = deviceInfo.isIPhone ? 0.005 : (deviceInfo.isMobile ? 0.0015 : 0.001);
+            
+            // Track scroll velocity for iPhone momentum detection
+            scrollVelocityRef.current = Math.abs(progressDelta);
+            
             if (Math.abs(progressDelta) > minMovementThreshold) {
               scrollDirectionRef.current = progressDelta > 0 ? 1 : -1;
             }
@@ -336,15 +352,22 @@ export const SphereParticles = ({
               // POST-BLAST LOGIC - only when scrolling back after a completed blast
               const isScrollingUp = scrollDirectionRef.current < 0;
               const hasCompletedFullBlast = blastCompletedRef.current && maxProgressReachedRef.current >= blastCompletePoint;
-              const isWellBelowBlastZone = currentProgress < (blastStartPoint - (deviceInfo.isMobile ? 0.06 : 0.05)); // Reduce mobile buffer slightly
+              // iPhone needs larger buffer zone due to Safari scroll momentum issues
+              const bufferZone = deviceInfo.isIPhone ? 0.10 : (deviceInfo.isMobile ? 0.06 : 0.05);
+              const isWellBelowBlastZone = currentProgress < (blastStartPoint - bufferZone);
               
               // Add time-based debouncing for extra mobile stability
               const currentTime = performance.now();
               const timeSinceLastRebuild = currentTime - lastRebuildTimeRef.current;
-              const minRebuildInterval = deviceInfo.isMobile ? 1000 : 500; // 1s on mobile, 0.5s on desktop
+              // iPhone needs even longer debounce due to iOS Safari momentum scrolling
+              const minRebuildInterval = deviceInfo.isIPhone ? 2000 : (deviceInfo.isMobile ? 1000 : 500);
+              
+              // iPhone-specific: prevent rebuild during high velocity scrolling (momentum)
+              const isHighVelocityScroll = deviceInfo.isIPhone && scrollVelocityRef.current > 0.01;
               
               if (hasCompletedFullBlast && isScrollingUp && isWellBelowBlastZone && 
-                  !rebuildTriggeredRef.current && timeSinceLastRebuild > minRebuildInterval) {
+                  !rebuildTriggeredRef.current && timeSinceLastRebuild > minRebuildInterval && 
+                  !isHighVelocityScroll) {
                 // Only set blast progress to 0 when well below blast zone
                 blastProgressRef.current = 0;
                 blastInProgressRef.current = false;
@@ -354,7 +377,7 @@ export const SphereParticles = ({
                   rebuildTriggeredRef.current = true; // Prevent multiple triggers
                   lastRebuildTimeRef.current = currentTime; // Record rebuild time
                   isRebuildPhaseRef.current = true;
-                  console.log('Triggering rebuild - Conditions met (quality-preserved, mobile-safe)');
+                  console.log('Triggering rebuild - Conditions met (quality-preserved, iPhone-safe)');
                   
                   if (buildProgressRef.current < 1) {
                     gsap.killTweensOf(buildProgressRef);
@@ -387,7 +410,8 @@ export const SphereParticles = ({
               blastInProgressRef.current = false;
               maxProgressReachedRef.current = 0;
               rebuildTriggeredRef.current = false;
-      lastRebuildTimeRef.current = 0; // Reset rebuild trigger
+      lastRebuildTimeRef.current = 0;
+      scrollVelocityRef.current = 0; // Reset rebuild trigger
               buildProgressRef.current = 0; // Reset build progress too
               
               // Restart build animation
